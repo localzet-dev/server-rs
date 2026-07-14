@@ -32,8 +32,8 @@
 | `src/Protocols/Http/Response.php` | `src/protocols/http/response.rs` | частично |
 | `src/Protocols/Http/ServerSentEvents.php` | `src/protocols/http/server_sent_events.rs` | готово |
 | `src/Protocols/Http/Session.php` | — | ожидает |
-| `src/Protocols/Http/Session/SessionHandlerInterface.php` | — | ожидает |
-| `src/Protocols/Http/Session/FileSessionHandler.php` | — | ожидает |
+| `src/Protocols/Http/Session/SessionHandlerInterface.php` | `src/protocols/http/session/session_handler.rs` | готово |
+| `src/Protocols/Http/Session/FileSessionHandler.php` | `src/protocols/http/session/file_session_handler.rs` | готово |
 | `src/Protocols/Http/Session/RedisSessionHandler.php` | — | ожидает |
 | `src/Protocols/Http/Session/RedisClusterSessionHandler.php` | — | ожидает |
 | `src/Protocols/Http/Session/MongoSessionHandler.php` | — | ожидает |

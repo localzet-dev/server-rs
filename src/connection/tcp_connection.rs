@@ -5,11 +5,20 @@ use std::time::Duration;
 
 use super::{Connection, ConnectionStatistics};
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum ConnectionStatus {
+    Initial,
+    Connecting,
+    Established,
+    Closing,
+    Closed,
+}
+
 pub struct TcpConnection {
     id: u64,
     stream: TcpStream,
     statistics: Arc<ConnectionStatistics>,
-    closed: bool,
+    status: ConnectionStatus,
 }
 
 impl TcpConnection {
@@ -25,8 +34,12 @@ impl TcpConnection {
             id,
             stream,
             statistics,
-            closed: false,
+            status: ConnectionStatus::Established,
         })
+    }
+
+    pub fn status(&self) -> ConnectionStatus {
+        self.status
     }
 
     pub(crate) fn read(&mut self, buffer: &mut [u8]) -> io::Result<usize> {
@@ -44,6 +57,16 @@ impl Connection for TcpConnection {
     }
 
     fn send(&mut self, data: &[u8]) -> io::Result<()> {
+        if matches!(
+            self.status,
+            ConnectionStatus::Closing | ConnectionStatus::Closed
+        ) {
+            return Err(io::Error::new(
+                io::ErrorKind::BrokenPipe,
+                "connection is closing or closed",
+            ));
+        }
+
         match self.stream.write_all(data) {
             Ok(()) => {
                 self.statistics.data_sent(data.len());
@@ -57,15 +80,17 @@ impl Connection for TcpConnection {
     }
 
     fn close(&mut self) -> io::Result<()> {
-        if self.closed {
+        if self.status == ConnectionStatus::Closed {
             return Ok(());
         }
 
-        self.closed = true;
-        match self.stream.shutdown(Shutdown::Both) {
+        self.status = ConnectionStatus::Closing;
+        let result = match self.stream.shutdown(Shutdown::Both) {
             Err(error) if error.kind() == io::ErrorKind::NotConnected => Ok(()),
             result => result,
-        }
+        };
+        self.status = ConnectionStatus::Closed;
+        result
     }
 
     fn local_address(&self) -> io::Result<SocketAddr> {

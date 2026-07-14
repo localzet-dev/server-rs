@@ -1,6 +1,6 @@
-use server_rs::protocols::http::{Chunk, ServerSentEvents};
+use server_rs::protocols::http::{Chunk, HttpMethod, Request, Response, ServerSentEvents};
 use server_rs::protocols::{
-    Frame, Protocol, ProtocolError, Redis, RedisArgument, RedisValue, Text,
+    Frame, Http, Protocol, ProtocolError, Redis, RedisArgument, RedisValue, Text,
 };
 
 #[test]
@@ -63,4 +63,68 @@ fn http_streaming_value_objects_match_wire_format() {
         event.encode(),
         "event: ping\nid: 1000\nretry: 5000\ndata: first\ndata: second\n\n"
     );
+}
+
+#[test]
+fn http_protocol_detects_and_parses_complete_request() {
+    let packet = b"POST /users?active=1 HTTP/1.1\r\nHost: example.test:8080\r\nContent-Type: application/x-www-form-urlencoded\r\nContent-Length: 15\r\nCookie: sid=abc; theme=dark\r\nAccept: application/json\r\n\r\nname=Ivan+Zorin";
+    assert_eq!(Http::input(&packet[..40], 4096).unwrap(), None);
+    assert_eq!(Http::input(packet, 4096).unwrap(), Some(packet.len()));
+
+    let request = Http::decode(packet).unwrap();
+    assert_eq!(request.method(), HttpMethod::Post);
+    assert_eq!(request.path(), "/users");
+    assert_eq!(request.get("active"), Some("1"));
+    assert_eq!(request.post("name"), Some("Ivan Zorin"));
+    assert_eq!(request.cookie("theme"), Some("dark"));
+    assert_eq!(request.host(true), Some("example.test"));
+    assert!(request.expects_json());
+}
+
+#[test]
+fn http_protocol_rejects_request_smuggling_inputs() {
+    let conflicting = b"POST / HTTP/1.1\r\nContent-Length: 1\r\nContent-Length: 2\r\n\r\na";
+    assert!(matches!(
+        Http::input(conflicting, 4096),
+        Err(ProtocolError::InvalidData(_))
+    ));
+    let chunked = b"POST / HTTP/1.1\r\nTransfer-Encoding: chunked\r\n\r\n0\r\n\r\n";
+    assert!(matches!(
+        Http::input(chunked, 4096),
+        Err(ProtocolError::InvalidData(_))
+    ));
+}
+
+#[test]
+fn http_response_formats_headers_body_and_cookies() {
+    let response = Response::new(201)
+        .with_header("content-type", "text/plain")
+        .with_cookie(
+            "token",
+            "a value",
+            Some(60),
+            Some("/"),
+            None,
+            true,
+            true,
+            Some("Lax"),
+        )
+        .with_body(b"created".to_vec());
+    let encoded = Http::encode(&response).unwrap();
+    let encoded = String::from_utf8(encoded).unwrap();
+    assert!(encoded.starts_with("HTTP/1.1 201 Created\r\n"));
+    assert!(encoded.contains("content-length: 7\r\n"));
+    assert!(encoded.contains(
+        "set-cookie: token=a%20value; Max-Age=60; Path=/; Secure; HttpOnly; SameSite=Lax\r\n"
+    ));
+    assert!(encoded.ends_with("\r\n\r\ncreated"));
+}
+
+#[test]
+fn request_parser_rejects_unsupported_methods() {
+    let packet = b"TRACE / HTTP/1.1\r\nHost: example.test\r\n\r\n";
+    assert!(matches!(
+        Request::parse(packet),
+        Err(ProtocolError::InvalidData("unsupported HTTP method"))
+    ));
 }

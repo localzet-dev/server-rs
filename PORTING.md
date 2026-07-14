@@ -23,13 +23,13 @@
 | `src/Protocols/Text.php` | `src/protocols/text.rs` | готово |
 | `src/Protocols/Frame.php` | `src/protocols/frame.rs` | готово |
 | `src/Protocols/Redis.php` | `src/protocols/redis.rs` | готово |
-| `src/Protocols/Http.php` | — | ожидает |
-| `src/Protocols/Https.php` | — | ожидает |
+| `src/Protocols/Http.php` | `src/protocols/http_protocol.rs` | частично |
+| `src/Protocols/Https.php` | `src/protocols/https.rs` | готово |
 | `src/Protocols/Ws.php` | — | ожидает |
 | `src/Protocols/Websocket.php` | — | ожидает |
 | `src/Protocols/Http/Chunk.php` | `src/protocols/http/chunk.rs` | готово |
-| `src/Protocols/Http/Request.php` | — | ожидает |
-| `src/Protocols/Http/Response.php` | — | ожидает |
+| `src/Protocols/Http/Request.php` | `src/protocols/http/request.rs` | частично |
+| `src/Protocols/Http/Response.php` | `src/protocols/http/response.rs` | частично |
 | `src/Protocols/Http/ServerSentEvents.php` | `src/protocols/http/server_sent_events.rs` | готово |
 | `src/Protocols/Http/Session.php` | — | ожидает |
 | `src/Protocols/Http/Session/SessionHandlerInterface.php` | — | ожидает |

@@ -13,7 +13,7 @@
 | `Helpers.php` | — | ожидает |
 | `Server.php` | `src/server.rs` | частично |
 | `ServerAbstract.php` | `src/server_abstract.rs` | частично |
-| `Timer.php` | — | ожидает |
+| `Timer.php` | `src/timer.rs` | готово |
 | `src/Connection/ConnectionInterface.php` | `src/connection/base.rs` | частично |
 | `src/Connection/TcpConnection.php` | `src/connection/tcp_connection.rs` | частично |
 | `src/Connection/UdpConnection.php` | `src/connection/udp_connection.rs` | готово |

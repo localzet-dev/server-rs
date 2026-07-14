@@ -16,9 +16,9 @@
 | `Timer.php` | — | ожидает |
 | `src/Connection/ConnectionInterface.php` | `src/connection/base.rs` | частично |
 | `src/Connection/TcpConnection.php` | `src/connection/tcp_connection.rs` | частично |
-| `src/Connection/UdpConnection.php` | — | ожидает |
+| `src/Connection/UdpConnection.php` | `src/connection/udp_connection.rs` | готово |
 | `src/Connection/AsyncTcpConnection.php` | — | ожидает |
-| `src/Connection/AsyncUdpConnection.php` | — | ожидает |
+| `src/Connection/AsyncUdpConnection.php` | `src/connection/async_udp_connection.rs` | частично |
 | `src/Protocols/ProtocolInterface.php` | `src/protocols/protocol.rs` | готово |
 | `src/Protocols/Text.php` | `src/protocols/text.rs` | готово |
 | `src/Protocols/Frame.php` | `src/protocols/frame.rs` | готово |

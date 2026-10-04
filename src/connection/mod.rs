@@ -1,8 +1,10 @@
+mod async_tcp_connection;
 mod async_udp_connection;
 mod base;
 mod tcp_connection;
 mod udp_connection;
 
+pub use async_tcp_connection::AsyncTcpConnection;
 pub use async_udp_connection::AsyncUdpConnection;
 pub use base::{Connection, ConnectionErrorCode, ConnectionStatistics, StatisticsSnapshot};
 pub use tcp_connection::{ConnectionStatus, TcpConnection};

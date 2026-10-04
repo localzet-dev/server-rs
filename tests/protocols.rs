@@ -1,6 +1,7 @@
 use server_rs::protocols::http::{Chunk, HttpMethod, Request, Response, ServerSentEvents};
 use server_rs::protocols::{
-    Frame, Http, Protocol, ProtocolError, Redis, RedisArgument, RedisValue, Text,
+    Frame, Http, Protocol, ProtocolError, Redis, RedisArgument, RedisValue, Text, WebSocket,
+    WebSocketFrame, WebSocketOpcode, Ws, websocket_accept_key,
 };
 
 #[test]
@@ -16,6 +17,24 @@ fn text_protocol_handles_partial_and_complete_lines() {
             maximum: 4,
         })
     );
+}
+
+#[test]
+fn websocket_handshake_and_frames_follow_rfc_6455() {
+    assert_eq!(
+        websocket_accept_key("dGhlIHNhbXBsZSBub25jZQ=="),
+        "s3pPLMBiTxaQ9kYGzzhZRbK+xOo="
+    );
+    let frame = WebSocketFrame {
+        fin: true,
+        opcode: WebSocketOpcode::Text,
+        payload: b"hello".to_vec(),
+    };
+    let encoded = WebSocket::encode(&frame).unwrap();
+    assert_eq!(WebSocket::decode(&encoded).unwrap(), frame);
+    let client_encoded = Ws::encode(&frame).unwrap();
+    assert_ne!(client_encoded[1] & 0x80, 0);
+    assert_eq!(Ws::decode(&client_encoded).unwrap(), frame);
 }
 
 #[test]
@@ -127,4 +146,13 @@ fn request_parser_rejects_unsupported_methods() {
         Request::parse(packet),
         Err(ProtocolError::InvalidData("unsupported HTTP method"))
     ));
+}
+
+#[test]
+fn websocket_rejects_non_minimal_lengths_and_trailing_data() {
+    assert!(WebSocket::input(&[0x82, 126, 0, 1, 0], 1024).is_err());
+    assert!(WebSocket::input(&[0x82, 127, 0, 0, 0, 0, 0, 0, 0, 126], 1024).is_err());
+    assert!(WebSocket::decode(&[0x82, 0, 0]).is_err());
+    assert!(WebSocket::decode(&[0x82, 2, 0]).is_err());
+    assert!(WebSocket::input(&[0x09, 0], 1024).is_err());
 }

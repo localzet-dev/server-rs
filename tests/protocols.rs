@@ -1,6 +1,7 @@
 use server_rs::protocols::http::{Chunk, HttpMethod, Request, Response, ServerSentEvents};
 use server_rs::protocols::{
-    Frame, Http, Protocol, ProtocolError, Redis, RedisArgument, RedisValue, Text,
+    Frame, Http, Protocol, ProtocolError, Redis, RedisArgument, RedisValue, Text, WebSocket,
+    WebSocketFrame, WebSocketOpcode, Ws, websocket_accept_key,
 };
 
 #[test]
@@ -16,6 +17,24 @@ fn text_protocol_handles_partial_and_complete_lines() {
             maximum: 4,
         })
     );
+}
+
+#[test]
+fn websocket_handshake_and_frames_follow_rfc_6455() {
+    assert_eq!(
+        websocket_accept_key("dGhlIHNhbXBsZSBub25jZQ=="),
+        "s3pPLMBiTxaQ9kYGzzhZRbK+xOo="
+    );
+    let frame = WebSocketFrame {
+        fin: true,
+        opcode: WebSocketOpcode::Text,
+        payload: b"hello".to_vec(),
+    };
+    let encoded = WebSocket::encode(&frame).unwrap();
+    assert_eq!(WebSocket::decode(&encoded).unwrap(), frame);
+    let client_encoded = Ws::encode(&frame).unwrap();
+    assert_ne!(client_encoded[1] & 0x80, 0);
+    assert_eq!(Ws::decode(&client_encoded).unwrap(), frame);
 }
 
 #[test]

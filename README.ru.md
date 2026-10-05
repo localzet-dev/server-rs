@@ -36,3 +36,7 @@ TCP использует один поток на соединение. Част
 До выпуска нужно определить поддерживаемые подмножества протоколов и лимиты; проверить фрагментацию, объединение пакетов и исчерпание ресурсов; реализовать и измерить цикл событий по готовности дескрипторов; проверить внешние хранилища сессий; стабилизировать API Rust. Где требуется совпадение поведения с PHP, нужны общие сценарии проверки. CI не включает развёртывание и публикацию в crates.io.
 
 [Введение в Rust для разработчика на PHP, Python и TypeScript](docs/RUST_FOR_PHP_DEVELOPERS.md). Лицензия — в `LICENSE`.
+
+## Attribution
+
+Maintainer of Localzet contributions: **Ivan Zorin (localzet)** — <creator@localzet.com> · https://www.localzet.com. Copyright © 2026 Localzet Group. Original authorship and third-party licenses remain applicable. See [AUTHORS](.github/AUTHORS.md).

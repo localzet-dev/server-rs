@@ -36,3 +36,7 @@ The TCP runtime currently uses one thread per connection. Several platform event
 Before a release: define supported protocol subsets and limits; test fragmented/coalesced input and resource exhaustion; implement and benchmark a real readiness-based event loop; verify session backends with actual services; stabilize the Rust API. Preserve parity tests against the PHP server where behavior is intended to match. Deployment and crates.io publication are not enabled by CI.
 
 [Rust introduction for PHP developers (Russian)](docs/RUST_FOR_PHP_DEVELOPERS.md). See `LICENSE` for licensing.
+
+## Attribution
+
+Maintainer of Localzet contributions: **Ivan Zorin (localzet)** — <creator@localzet.com> · https://www.localzet.com. Copyright © 2026 Localzet Group. Original authorship and third-party licenses remain applicable. See [AUTHORS](.github/AUTHORS.md).

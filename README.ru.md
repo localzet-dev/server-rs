@@ -37,6 +37,6 @@ TCP использует один поток на соединение. Част
 
 [Введение в Rust для разработчика на PHP, Python и TypeScript](docs/RUST_FOR_PHP_DEVELOPERS.md). Лицензия — в `LICENSE`.
 
-## Attribution
+## Авторство
 
-Maintainer of Localzet contributions: **Ivan Zorin (localzet)** — <creator@localzet.com> · https://www.localzet.com. Copyright © 2026 Localzet Group. Original authorship and third-party licenses remain applicable. See [AUTHORS](.github/AUTHORS.md).
+Сопровождающий собственных изменений: **Ivan Zorin (localzet)** — <creator@localzet.com> · https://www.localzet.com. Copyright © 2026 Localzet Group. Исходное авторство и лицензии сторонних компонентов сохраняются. См. [AUTHORS](.github/AUTHORS.md).
